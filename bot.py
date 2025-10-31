@@ -18,6 +18,26 @@ async def on_ready():
 async def enviar(ctx, *, mensagem):
     await ctx.send(mensagem)
 
+@bot.command()
+async def anuncio(ctx):
+    embed = discord.Embed(
+        title="🟪 PAINEL:",
+        description="[https://heavencity.com/](https://heavencity.com/)",
+        color=#A02D8E  # Roxo
+    )
+
+    embed.add_field(
+        name="🏙️ CONNECT HEAVEN CITY:",
+        value="```connect 189.127.164.145:22749```",
+        inline=False
+    )
+
+    embed.set_thumbnail(url="https://i.imgur.com/AvL2Qck.png")  # substitua pela imagem que quiser
+    embed.set_footer(text="🟪 Atenciosamente Heaven City")
+
+    await ctx.send(content="@everyone", embed=embed)
+
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
