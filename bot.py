@@ -28,7 +28,7 @@ async def anuncio(ctx):
 
     embed.add_field(
         name="🏙️ CONNECT HEAVEN CITY:",
-        value="```connect 189.127.164.145:22749```",
+        value="```189.127.164.145:22749```",
         inline=False
     )
 
@@ -40,6 +40,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
