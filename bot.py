@@ -8,7 +8,7 @@ intents.message_content = True  # Permite ler o conteúdo das mensagens
 intents.members = True          # Permite ver membros (se precisar)
 intents.presences = False       # Pode deixar False se não for usar status
 
-bot = commands.Bot(command_prefix="/", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
@@ -22,3 +22,4 @@ async def enviar(ctx, *, mensagem):
     await ctx.send(mensagem)
 
 bot.run(TOKEN)
+
