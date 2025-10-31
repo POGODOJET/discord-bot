@@ -22,7 +22,7 @@ async def enviar(ctx, *, mensagem):
 async def anuncio(ctx):
     embed = discord.Embed(
         title="🟪 PAINEL:",
-        description="[https://heavencity.com/](https://heavencity.com/)",
+        description="🌐 [Clique aqui para acessar o site](https://heavencity.com/)",
         color=0xA02D8E  # Roxo
     )
 
@@ -40,6 +40,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
