@@ -23,7 +23,7 @@ async def anuncio(ctx):
     embed = discord.Embed(
         title="🟪 PAINEL:",
         description="[https://heavencity.com/](https://heavencity.com/)",
-        color=A02D8E  # Roxo
+        color=0xA02D8E  # Roxo
     )
 
     embed.add_field(
@@ -40,5 +40,6 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
