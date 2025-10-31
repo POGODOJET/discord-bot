@@ -10,9 +10,6 @@ intents.presences = False       # Pode deixar False se não for usar status
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-bot.run(TOKEN)
-
 @bot.event
 async def on_ready():
     print(f"✅ Bot {bot.user} conectado com sucesso!")
@@ -21,5 +18,6 @@ async def on_ready():
 async def enviar(ctx, *, mensagem):
     await ctx.send(mensagem)
 
+# Token seguro vindo das variáveis da Railway
+TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
-
