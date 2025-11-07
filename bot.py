@@ -65,106 +65,6 @@ async def ticketpainel1(ctx):
 
     await ctx.send(embed=embed, view=TicketView())
 
-class OpenTicketButton(discord.ui.Button):
-    def __init__(self):
-        super().__init__(label="📨 Abrir Ticket", style=discord.ButtonStyle.primary)
-
-    async def callback(self, interaction: Interaction):
-        view = TicketView()
-        await interaction.response.send_message(
-            "Selecione o tipo de ticket:",
-            view=view,
-            ephemeral=True
-        )
-
-
-class TicketSelect(discord.ui.Select):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="Suporte Geral", emoji="🔔"),
-            discord.SelectOption(label="Financeiro", emoji="💰"),
-            discord.SelectOption(label="Reportar Bug", emoji="🐞"),
-            discord.SelectOption(label="Ativação Produto/Plano", emoji="✅"),
-        ]
-
-        super().__init__(
-            placeholder="Escolha o tipo de ticket...",
-            options=options
-        )
-
-    async def callback(self, interaction: Interaction):
-        guild = interaction.guild
-        
-        overwrites = {
-            guild.default_role: discord.PermissionOverwrite(view_channel=False),
-            interaction.user: discord.PermissionOverwrite(view_channel=True),
-        }
-
-        ticket_channel = await guild.create_text_channel(
-            name=f"ticket-{interaction.user.name}",
-            overwrites=overwrites
-        )
-
-        await ticket_channel.send(
-            f"✅ Ticket aberto! Tipo selecionado: **{self.values[0]}**"
-        )
-        await interaction.response.send_message("✅ Ticket criado!", ephemeral=True)
-
-
-class TicketView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.add_item(TicketSelect())
-
-
-@bot.command()
-async def ticketpainel2(ctx):
-    await ctx.send(
-        "Clique no botão abaixo para abrir um ticket:",
-        view=discord.ui.View().add_item(OpenTicketButton())
-    )
-
-class TicketButton(discord.ui.Button):
-    def __init__(self, label, emoji):
-        super().__init__(label=label, emoji=emoji, style=discord.ButtonStyle.secondary)
-
-    async def callback(self, interaction: Interaction):
-        guild = interaction.guild
-
-        overwrites = {
-            guild.default_role: discord.PermissionOverwrite(view_channel=False),
-            interaction.user: discord.PermissionOverwrite(view_channel=True),
-        }
-
-        ticket_channel = await guild.create_text_channel(
-            name=f"ticket-{interaction.user.name}",
-            overwrites=overwrites
-        )
-
-        await ticket_channel.send(f"✅ Ticket aberto para **{self.label}**!")
-        await interaction.response.send_message("✅ Ticket criado!", ephemeral=True)
-
-
-class TicketButtons(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
-        self.add_item(TicketButton("Suporte", "🔧"))
-        self.add_item(TicketButton("Financeiro", "💰"))
-        self.add_item(TicketButton("Bug / Erro", "🐞"))
-        self.add_item(TicketButton("Orçamento", "🧾"))
-
-
-@bot.command()
-async def ticketpainel3(ctx):
-    embed = discord.Embed(
-        title="📨 Abertura de Tickets",
-        description="Clique na categoria desejada:",
-        color=0x2b2d31
-    )
-
-    await ctx.send(embed=embed, view=TicketButtons())
-
 @bot.command()
 async def teste(ctx, *, mensagem):
     embed = discord.Embed(
@@ -203,6 +103,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
