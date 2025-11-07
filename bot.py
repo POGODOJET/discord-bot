@@ -100,7 +100,7 @@ class TicketSelect(discord.ui.Select):
             color=0x2b2d31
         )
 
-        embed.set_image(url="https://ibb.co/fdRxCBTY")  # ✅ Banner que você pediu
+        embed.set_image(url="https://media.discordapp.net/attachments/795844164763516969/1436384412928446607/heavenbanner.png?ex=690f68ba&is=690e173a&hm=cbc9faeaceb864c1c4e9105228a785fa441b66571660d047d6638b0afeb37b0a&=&format=webp&quality=lossless")  # ✅ Banner que você pediu
 
         await ticket_channel.send(embed=embed, view=admin_view)
 
@@ -251,7 +251,7 @@ async def ticketpainel(ctx):
         color=0x2b2d31
     )
 
-    embed.set_image(url="https://ibb.co/fdRxCBTY")  # ✅ Banner aqui
+    embed.set_image(url="https://media.discordapp.net/attachments/795844164763516969/1436384412928446607/heavenbanner.png?ex=690f68ba&is=690e173a&hm=cbc9faeaceb864c1c4e9105228a785fa441b66571660d047d6638b0afeb37b0a&=&format=webp&quality=lossless")  # ✅ Banner aqui
 
     await ctx.send(embed=embed, view=TicketView())
 
@@ -315,5 +315,6 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
