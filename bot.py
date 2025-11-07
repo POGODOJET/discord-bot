@@ -100,7 +100,7 @@ class TicketSelect(discord.ui.Select):
             color=0x2b2d31
         )
 
-        embed.set_image(url="https://imgur.com/gallery/baneer-haven-qTem3kJ#6wMrbH6")  # ✅ Banner que você pediu
+        embed.set_image(url="https://ibb.co/fdRxCBTY")  # ✅ Banner que você pediu
 
         await ticket_channel.send(embed=embed, view=admin_view)
 
@@ -315,3 +315,4 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
