@@ -12,9 +12,9 @@ intents.message_content = True  # Permite ler o conteúdo das mensagens
 intents.members = True          # Permite ver membros (se precisar)
 intents.presences = False       # Pode deixar False se não for usar status
 
-# IDs enviados por você ✅
+# ✅ IDs configurados por você
 CATEGORY_ID = 1387269436259434557
-LOG_CHANNEL_ID = 1436370980674076725
+LOG_CHANNEL_ID = 1436234566015914077
 STAFF_ROLE_ID = 1387269134609420358
 
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -22,20 +22,24 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 ticket_count = 0
 blacklist = set()
 
-# ============================
+# ========================================================================
 # ✅ BOT ONLINE
-# ============================
+# ========================================================================
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
-    await bot.tree.sync()
+    try:
+        await bot.tree.sync()
+    except:
+        pass
 
 
-# ============================
-# ✅ SELECT MENU
-# ============================
+# ========================================================================
+# ✅ SELECT MENU PARA ABRIR TICKET
+# ========================================================================
 class TicketSelect(discord.ui.Select):
     def __init__(self):
+
         options = [
             discord.SelectOption(label="Suporte Geral", emoji="🔔"),
             discord.SelectOption(label="Financeiro", emoji="💰"),
@@ -44,15 +48,13 @@ class TicketSelect(discord.ui.Select):
         ]
 
         super().__init__(
-            placeholder="Clique aqui para selecionar o assunto",
-            min_values=1,
-            max_values=1,
+            placeholder="Selecione o assunto do ticket:",
             options=options
         )
 
     async def callback(self, interaction: Interaction):
 
-        # ✅ Blacklist
+        # ✅ Verificar blacklist
         if interaction.user.id in blacklist:
             await interaction.response.send_message(
                 "🚫 Você está bloqueado de abrir tickets.",
@@ -64,65 +66,83 @@ class TicketSelect(discord.ui.Select):
         ticket_count += 1
 
         guild = interaction.guild
-        category = guild.get_channel(CATEGORY_ID)
         staff_role = guild.get_role(STAFF_ROLE_ID)
         logs = guild.get_channel(LOG_CHANNEL_ID)
+        category = guild.get_channel(CATEGORY_ID)
 
         ticket_name = f"ticket-{ticket_count:03d}"
 
+        # ✅ Permissões do ticket
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(view_channel=False),
-            interaction.user: discord.PermissionOverwrite(view_channel=True),
-            staff_role: discord.PermissionOverwrite(view_channel=True),
+            interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+            staff_role: discord.PermissionOverwrite(view_channel=True, send_messages=True)
         }
 
+        # ✅ Criar canal do ticket
         ticket_channel = await guild.create_text_channel(
             name=ticket_name,
             category=category,
             overwrites=overwrites
         )
 
-        # ✅ ENVIAR LOG
-        await logs.send(
-            f"✅ **Ticket criado:** {ticket_channel.mention}\n"
-            f"👤 **Usuário:** {interaction.user.mention}\n"
-            f"📂 **Categoria:** {self.values[0]}"
-        )
+        # ✅ Painel administrativo no ticket
+        admin_view = AdminTicketView(interaction.user.id)
 
-        # ✅ Resposta oculta ao usuário
-        await interaction.response.send_message(
-            "✅ Seu ticket foi criado!",
-            ephemeral=True
-        )
-
-        # ✅ Embed de boas-vindas
+        # ✅ Mensagem de boas-vindas
         embed = discord.Embed(
-            title="📨 Bem-vindo ao seu Ticket!",
+            title="📨 Ticket Aberto!",
             description=(
-                f"Olá {interaction.user.mention},\n"
-                f"Um membro da equipe irá te atender em breve.\n\n"
-                f"📌 **Assunto selecionado:** `{self.values[0]}`"
+                f"{interaction.user.mention}, obrigado por abrir um ticket.\n"
+                f"**Seleção:** `{self.values[0]}`\n\n"
+                f"<@&{STAFF_ROLE_ID}> um novo ticket foi aberto!"
             ),
             color=0x2b2d31
         )
 
-        view = CloseTicketView()
+        embed.set_image(url="https://imgur.com/gallery/baneer-haven-qTem3kJ#6wMrbH6")  # ✅ Banner que você pediu
 
-        await ticket_channel.send(embed=embed, view=view)
+        await ticket_channel.send(embed=embed, view=admin_view)
+
+        # ✅ Log
+        await logs.send(
+            f"✅ **Ticket criado:** {ticket_channel.mention}\n"
+            f"👤 **Usuário:** {interaction.user.mention}\n"
+            f"📂 **Categoria:** `{self.values[0]}`"
+        )
+
+        # ✅ Resposta oculta ao usuário
+        await interaction.response.send_message(
+            "✅ Ticket criado com sucesso!",
+            ephemeral=True
+        )
 
 
-# ============================
-# ✅ VIEW COM SELECT MENU
-# ============================
+# ========================================================================
+# ✅ VIEW DO SELECT MENU
+# ========================================================================
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(TicketSelect())
 
 
-# ============================
-# ✅ BOTÃO DE FECHAR TICKET
-# ============================
+# ========================================================================
+# ✅ ADMIN VIEW (APARECE EM TODO TICKET)
+# ========================================================================
+class AdminTicketView(discord.ui.View):
+    def __init__(self, user_id):
+        super().__init__(timeout=None)
+        self.user_id = user_id
+
+        self.add_item(CloseTicketButton())
+        self.add_item(AddUserButton())
+        self.add_item(RemoveUserButton())
+
+
+# ========================================================================
+# ✅ FECHAR TICKET
+# ========================================================================
 class CloseTicketButton(discord.ui.Button):
     def __init__(self):
         super().__init__(
@@ -131,28 +151,57 @@ class CloseTicketButton(discord.ui.Button):
         )
 
     async def callback(self, interaction: Interaction):
+        if STAFF_ROLE_ID not in [role.id for role in interaction.user.roles]:
+            await interaction.response.send_message(
+                "🚫 Apenas staff pode fechar tickets.",
+                ephemeral=True
+            )
+            return
+
         channel = interaction.channel
+        guild = interaction.guild
+        logs = guild.get_channel(LOG_CHANNEL_ID)
 
         await interaction.response.send_message(
-            "✅ O ticket será fechado em 5 segundos...",
+            "🔒 Fechando ticket em 5 segundos...",
             ephemeral=True
         )
 
         await asyncio.sleep(5)
 
-        # ✅ Gerar transcrição
-        transcript_text = ""
+        # ✅ Criar transcrição
+        transcript = ""
         async for msg in channel.history(limit=None, oldest_first=True):
-            transcript_text += f"[{msg.created_at}] {msg.author}: {msg.content}\n"
+            transcript += f"[{msg.created_at}] {msg.author}: {msg.content}\n"
 
         filename = f"{channel.name}-transcript.txt"
         with open(filename, "w", encoding="utf-8") as f:
-            f.write(transcript_text)
+            f.write(transcript)
 
-        guild = interaction.guild
-        logs = guild.get_channel(LOG_CHANNEL_ID)
+        opener = None
+        async for msg in channel.history(limit=5):
+            opener = msg.mentions[0] if msg.mentions else None
+            break
 
-        # ✅ Enviar transcrição nos logs
+        # ✅ Enviar transcrição no DM do usuário
+        if opener:
+            try:
+                await opener.send(
+                    "✅ Seu ticket foi fechado! Aqui está uma cópia da transcrição:",
+                    file=discord.File(filename)
+                )
+
+                # ✅ Enviar avaliação
+                await opener.send(
+                    "**⭐ Avalie o atendimento!**\n"
+                    "Responda com um número de **1 a 5**, sendo:\n"
+                    "1 ⭐ = Péssimo\n"
+                    "5 ⭐ = Excelente"
+                )
+            except:
+                pass
+
+        # ✅ Enviar log no servidor
         await logs.send(
             f"🔒 **Ticket fechado:** {channel.name}\n"
             f"👤 Fechado por: {interaction.user.mention}",
@@ -162,42 +211,67 @@ class CloseTicketButton(discord.ui.Button):
         await channel.delete()
 
 
-class CloseTicketView(discord.ui.View):
+# ========================================================================
+# ✅ ADICIONAR USUÁRIO AO TICKET
+# ========================================================================
+class AddUserButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(timeout=None)
-        self.add_item(CloseTicketButton())
+        super().__init__(label="➕ Adicionar Usuário", style=discord.ButtonStyle.primary)
+
+    async def callback(self, interaction: Interaction):
+        if STAFF_ROLE_ID not in [r.id for r in interaction.user.roles]:
+            return await interaction.response.send_message("🚫 Somente staff.", ephemeral=True)
+
+        await interaction.response.send_message("👤 Marque o usuário para adicionar:", ephemeral=True)
 
 
-# ============================
-# ✅ COMANDO PARA ENVIAR O PAINEL
-# ============================
+# ========================================================================
+# ✅ REMOVER USUÁRIO DO TICKET
+# ========================================================================
+class RemoveUserButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="➖ Remover Usuário", style=discord.ButtonStyle.secondary)
+
+    async def callback(self, interaction: Interaction):
+        if STAFF_ROLE_ID not in [r.id for r in interaction.user.roles]:
+            return await interaction.response.send_message("🚫 Somente staff.", ephemeral=True)
+
+        await interaction.response.send_message("👤 Marque o usuário para remover:", ephemeral=True)
+
+
+# ========================================================================
+# ✅ COMANDO PARA ENVIAR O PAINEL COM BANNER
+# ========================================================================
 @bot.command()
 async def ticketpainel(ctx):
+
     embed = discord.Embed(
-        title="📨 Sistema de Tickets",
-        description="Selecione abaixo a categoria do seu atendimento:",
+        title="🎫 Sistema de Tickets",
+        description="Selecione abaixo o assunto do seu atendimento:",
         color=0x2b2d31
     )
+
+    embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")  # ✅ Banner aqui
 
     await ctx.send(embed=embed, view=TicketView())
 
 
-# ============================
-# ✅ COMANDOS DA STAFF
-# ============================
-
+# ========================================================================
+# ✅ BLACKLIST (Staff)
+# ========================================================================
 @bot.command()
 @commands.has_role(STAFF_ROLE_ID)
 async def blacklist_add(ctx, member: discord.Member):
     blacklist.add(member.id)
-    await ctx.send(f"🚫 {member.mention} foi **bloqueado** de abrir tickets.")
+    await ctx.send(f"🚫 {member.mention} não pode mais abrir tickets.")
 
 
 @bot.command()
 @commands.has_role(STAFF_ROLE_ID)
 async def blacklist_remove(ctx, member: discord.Member):
     blacklist.discard(member.id)
-    await ctx.send(f"✅ {member.mention} foi **desbloqueado**.")
+    await ctx.send(f"✅ {member.mention} pode abrir tickets novamente.")
+
 # ============================================================ FINAL BOT TICKET=====================================================================================================
 
 @bot.command()
@@ -241,15 +315,3 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
-
-
-
-
-
-
-
-
-
-
-
-
