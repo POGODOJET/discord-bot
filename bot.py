@@ -105,11 +105,18 @@ class TicketSelect(discord.ui.Select):
         await ticket_channel.send(embed=embed, view=admin_view)
 
         # ✅ Log
-        await logs.send(
-            f"✅ **Ticket criado:** {ticket_channel.mention}\n"
-            f"👤 **Usuário:** {interaction.user.mention}\n"
-            f"📂 **Categoria:** `{self.values[0]}`"
-        )
+await interaction.response.send_message(
+    embed=discord.Embed(
+        title="✅ Ticket criado com sucesso!",
+        description=(
+            f"Seu ticket foi aberto com sucesso!\n"
+            "Aguarde um membro da equipe responder.\n\n"
+            "Obrigado por entrar em contato!"
+        ),
+        color=0x2ecc71
+    ),
+    ephemeral=True
+)
 
         # ✅ Resposta oculta ao usuário
         await interaction.response.send_message(
@@ -315,6 +322,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
