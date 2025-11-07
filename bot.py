@@ -42,6 +42,7 @@ class TicketSelect(discord.ui.Select):
 
         options = [
             discord.SelectOption(label="Suporte Geral", emoji="🔔"),
+            discord.SelectOption(label="Denuncia", emoji="☎️"),
             discord.SelectOption(label="Financeiro", emoji="💰"),
             discord.SelectOption(label="Reportar Bug", emoji="🐞"),
             discord.SelectOption(label="Ativação Produto/Plano", emoji="✅"),
@@ -105,18 +106,12 @@ class TicketSelect(discord.ui.Select):
         await ticket_channel.send(embed=embed, view=admin_view)
 
         # ✅ Log
-await interaction.response.send_message(
-    embed=discord.Embed(
-        title="✅ Ticket criado com sucesso!",
-        description=(
-            f"Seu ticket foi aberto com sucesso!\n"
-            "Aguarde um membro da equipe responder.\n\n"
-            "Obrigado por entrar em contato!"
-        ),
-        color=0x2ecc71
-    ),
-    ephemeral=True
+await logs.send(
+    f"✅ **Ticket criado:** {ticket_channel.mention}\n"
+    f"👤 **Usuário:** {interaction.user.mention}\n"
+    f"📂 **Categoria:** {self.values[0]}"
 )
+
 
         # ✅ Resposta oculta ao usuário
         await interaction.response.send_message(
