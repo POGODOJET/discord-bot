@@ -15,6 +15,18 @@ async def on_ready():
     print(f"✅ Bot {bot.user} conectado com sucesso!")
 
 @bot.command()
+async def teste(ctx, *, mensagem):
+    embed = discord.Embed(
+        description=mensagem,
+        color=0xA02D8E  # escolha sua cor
+    )
+
+    embed.set_thumbnail(url="https://heavencity.com/suaimagem.png")  # opcional
+    embed.set_footer(text="💜 Atenciosamente Heaven City")
+
+    await ctx.send(content="@everyone", embed=embed)
+
+@bot.command()
 async def enviar(ctx, *, mensagem):
     await ctx.send(mensagem)
 
@@ -40,6 +52,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
