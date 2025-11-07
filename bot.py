@@ -251,7 +251,7 @@ async def ticketpainel(ctx):
         color=0x2b2d31
     )
 
-    embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")  # ✅ Banner aqui
+    embed.set_image(url="https://ibb.co/fdRxCBTY")  # ✅ Banner aqui
 
     await ctx.send(embed=embed, view=TicketView())
 
@@ -315,4 +315,5 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
