@@ -106,12 +106,11 @@ class TicketSelect(discord.ui.Select):
         await ticket_channel.send(embed=embed, view=admin_view)
 
         # ✅ Log
-await logs.send(
-    f"✅ **Ticket criado:** {ticket_channel.mention}\n"
-    f"👤 **Usuário:** {interaction.user.mention}\n"
-    f"📂 **Categoria:** {self.values[0]}"
-)
-
+        await logs.send(
+            f"✅ **Ticket criado:** {ticket_channel.mention}\n"
+            f"👤 **Usuário:** {interaction.user.mention}\n"
+            f"📂 **Categoria:** `{self.values[0]}`"
+        )
 
         # ✅ Resposta oculta ao usuário
         await interaction.response.send_message(
@@ -317,6 +316,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
