@@ -14,7 +14,7 @@ intents.presences = False       # Pode deixar False se não for usar status
 
 # IDs enviados por você ✅
 CATEGORY_ID = 1387269436259434557
-LOG_CHANNEL_ID = 1436234566015914077
+LOG_CHANNEL_ID = 1436370980674076725
 STAFF_ROLE_ID = 1387269134609420358
 
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -241,6 +241,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
