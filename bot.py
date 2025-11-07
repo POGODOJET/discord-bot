@@ -1,7 +1,7 @@
 import discord
 import os
 from discord.ext import commands
-from discord import app_commands, Interacti
+from discord import app_commands, Interaction
 
 # Configurar intents corretamente
 intents = discord.Intents.default()
@@ -105,6 +105,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
