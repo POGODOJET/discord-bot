@@ -29,11 +29,12 @@ setup_commands(bot)
 
 @bot.event
 async def on_ready():
-print(f"✅ Bot conectado como {bot.user}")
-try:
-await bot.tree.sync()
-except Exception:
-pass
+    print(f"✅ Bot conectado como {bot.user}")
+    try:
+        await bot.tree.sync()
+        print("✅ Comandos sincronizados!")
+    except Exception as e:
+        print(f"❌ Erro ao sincronizar comandos: {e}")
 
 
 if __name__ == "__main__":
@@ -41,3 +42,4 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
 raise RuntimeError("DISCORD_TOKEN não encontrado nas variáveis de ambiente")
 bot.run(TOKEN)
+
