@@ -61,7 +61,6 @@ class CloseTicketButton(discord.ui.Button):
         guild = interaction.guild
         log_channel = guild.get_channel(self.log_channel_id)
 
-        # ✅ Transcrição do ticket
         transcript = ""
         async for msg in channel.history(limit=None, oldest_first=True):
             transcript += f"[{msg.created_at}] {msg.author}: {msg.content}\n"
@@ -72,7 +71,6 @@ class CloseTicketButton(discord.ui.Button):
 
         opener = guild.get_member(self.opener_id)
 
-        # ✅ Enviar DM ao usuário
         if opener:
             try:
                 await opener.send(
@@ -82,13 +80,11 @@ class CloseTicketButton(discord.ui.Button):
             except:
                 pass
 
-        # ✅ Log no servidor
         await log_channel.send(
             f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}.",
             file=discord.File(file_name)
         )
 
-        # ✅ Deletar canal
         await channel.delete()
 
 
@@ -110,4 +106,123 @@ class TicketSelect(discord.ui.Select):
             discord.SelectOption(label="Ativação Produto/Plano", emoji="✅"),
         ]
 
-        super()
+        super().__init__(placeholder="Selecione o assunto:", options=options)
+
+    async def callback(self, interaction: Interaction):
+        user = interaction.user
+
+        if user.id in _blacklist:
+            return await interaction.response.send_message(
+                "🚫 Você está bloqueado de abrir tickets.",
+                ephemeral=True
+            )
+
+        guild = interaction.guild
+        category = guild.get_channel(self.category_id)
+        staff_role = guild.get_role(self.staff_role_id)
+        log_channel = guild.get_channel(self.log_channel_id)
+
+        ticket_name = f"ticket-{user.name}-{interaction.id}".replace(" ", "-")
+
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+            staff_role: discord.PermissionOverwrite(view_channel=True, send_messages=True)
+        }
+
+        ticket_channel = await guild.create_text_channel(
+            name=ticket_name,
+            category=category,
+            overwrites=overwrites
+        )
+
+        admin_view = AdminTicketView(user.id, self.log_channel_id, self.staff_role_id)
+
+        embed = discord.Embed(
+            title="📨 Ticket Aberto!",
+            description=(
+                f"{user.mention}, seu ticket foi criado.\n"
+                f"**Categoria:** `{self.values[0]}`\n\n"
+                f"<@&{self.staff_role_id}> foi notificada!"
+            ),
+            color=0x2b2d31
+        )
+
+        embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")
+        await ticket_channel.send(embed=embed, view=admin_view)
+
+        embed_user = discord.Embed(
+            title="✅ Ticket criado com sucesso!",
+            description=(
+                f"**Ticket:** `{ticket_name}`\n"
+                f"**Categoria:** `{self.values[0]}`\n"
+                f"**Canal:** {ticket_channel.mention}\n\n"
+                "A equipe foi notificada."
+            ),
+            color=0x2ecc71
+        )
+
+        await interaction.response.send_message(
+            embed=embed_user,
+            ephemeral=True
+        )
+
+
+# ===============================================================
+# ✅ VIEWS
+# ===============================================================
+
+class TicketView(discord.ui.View):
+    def __init__(self, category_id, log_channel_id, staff_role_id):
+        super().__init__(timeout=None)
+        self.add_item(TicketSelect(category_id, log_channel_id, staff_role_id))
+
+
+class AdminTicketView(discord.ui.View):
+    def __init__(self, opener_id, log_channel_id, staff_role_id):
+        super().__init__(timeout=None)
+        self.add_item(CloseTicketButton(opener_id, log_channel_id, staff_role_id))
+        self.add_item(AddUserButton(staff_role_id))
+        self.add_item(RemoveUserButton(staff_role_id))
+
+
+# ===============================================================
+# ✅ Enviar painel
+# ===============================================================
+
+async def send_ticket_panel(ctx, category_id, log_channel_id, staff_role_id):
+    embed = discord.Embed(
+        title="🎫 Sistema de Tickets",
+        description="Selecione abaixo o motivo do atendimento:",
+        color=0x2b2d31
+    )
+    
+    embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")
+
+    view = TicketView(category_id, log_channel_id, staff_role_id)
+    await ctx.send(embed=embed, view=view)
+
+
+# ===============================================================
+# ✅ Setup (usado no bot.py)
+# ===============================================================
+
+def setup_tickets(bot, category_id, log_channel_id, staff_role_id):
+    bot.ticket_category_id = category_id
+    bot.ticket_log_channel_id = log_channel_id
+    bot.ticket_staff_role_id = staff_role_id
+    bot.add_cog(_TicketCommands(bot))
+
+
+class _TicketCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="ticketpainel")
+    async def ticketpainel(self, ctx):
+        await send_ticket_panel(
+            ctx,
+            self.bot.ticket_category_id,
+            self.bot.ticket_log_channel_id,
+            self.bot.ticket_staff_role_id
+        )
