@@ -130,10 +130,10 @@ await logs.send(
 )
 
 
-        # ✅ Resposta oculta ao usuário
-        await interaction.response.send_message(
-            "✅ Ticket criado com sucesso!",
-            ephemeral=True
+# ✅ Resposta oculta ao usuário
+await interaction.response.send_message(
+    "✅ Ticket criado com sucesso!",
+     ephemeral=True
         )
 
 
@@ -334,6 +334,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
