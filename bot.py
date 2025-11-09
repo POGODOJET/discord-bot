@@ -38,8 +38,9 @@ async def on_ready():
 
 
 if __name__ == "__main__":
-TOKEN = os.getenv("DISCORD_TOKEN")
-if not TOKEN:
-raise RuntimeError("DISCORD_TOKEN não encontrado nas variáveis de ambiente")
-bot.run(TOKEN)
+    TOKEN = os.getenv("DISCORD_TOKEN")
+    if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN não encontrado nas variáveis de ambiente")
+    bot.run(TOKEN)
+
 
