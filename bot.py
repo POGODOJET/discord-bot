@@ -106,11 +106,29 @@ class TicketSelect(discord.ui.Select):
         await ticket_channel.send(embed=embed, view=admin_view)
 
         # ✅ Log
-        await logs.send(
-            f"✅ **Ticket criado:** {ticket_channel.mention}\n"
-            f"👤 **Usuário:** {interaction.user.mention}\n"
-            f"📂 **Categoria:** `{self.values[0]}`"
-        )
+        # ✅ MENSAGEM PRIVADA PARA O USUÁRIO
+embed_user = discord.Embed(
+    title="✅ Ticket criado com sucesso!",
+    description=(
+        f"**Ticket:** `{ticket_name}`\n"
+        f"**Categoria:** `{self.values[0]}`\n"
+        f"**Canal:** {ticket_channel.mention}\n\n"
+        "A equipe foi notificada e irá te atender em breve."
+    ),
+    color=0x2ecc71
+)
+
+await interaction.response.send_message(
+    embed=embed_user,
+    ephemeral=True
+)
+
+
+# ✅ LOG SIMPLES NO CANAL (sem detalhes)
+await logs.send(
+    f"✅ Novo ticket aberto: {ticket_channel.mention}"
+)
+
 
         # ✅ Resposta oculta ao usuário
         await interaction.response.send_message(
@@ -316,6 +334,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
