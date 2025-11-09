@@ -123,20 +123,6 @@ await interaction.response.send_message(
     ephemeral=True
 )
 
-
-# ✅ LOG SIMPLES NO CANAL (sem detalhes)
-await logs.send(
-    f"✅ Novo ticket aberto: {ticket_channel.mention}"
-)
-
-
-# ✅ Resposta oculta ao usuário
-await interaction.response.send_message(
-    "✅ Ticket criado com sucesso!",
-     ephemeral=True
-        )
-
-
 # ========================================================================
 # ✅ VIEW DO SELECT MENU
 # ========================================================================
@@ -334,6 +320,7 @@ async def anuncio(ctx):
 # Token seguro vindo das variáveis da Railway
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
+
 
 
 
