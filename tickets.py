@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import Interaction
 import asyncio
+from tickets import setup_tickets
 
 _blacklist = set()
 
