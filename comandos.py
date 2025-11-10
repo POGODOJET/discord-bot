@@ -1,54 +1,36 @@
-# comandos.py
-
-import discord
+# bot.py
+import os
 from discord.ext import commands
-from tickets import send_ticket_panel
+import discord
 
+from tickets import setup_tickets
+from comandos import setup_commands
 
-# ===============================================================
-# ✅ Setup dos módulos de comandos
-# ===============================================================
-def setup_commands(bot):
-    bot.add_cog(_MiscCommands(bot))
+# IDs fornecidos
+CATEGORY_ID = 1387269436259434557
+LOG_CHANNEL_ID = 1436234566015914077
+STAFF_ROLE_ID = 1387269134609420358
 
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
 
-# ===============================================================
-# ✅ Classe com os comandos
-# ===============================================================
-class _MiscCommands(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-    # ✅ comando: !teste
-    @commands.command()
-    async def teste(self, ctx, *, mensagem):
-        embed = discord.Embed(description=mensagem, color=0xA02D8E)
-        embed.set_thumbnail(url="https://heavencity.com/suaimagem.png")
-        embed.set_footer(text="💜 Atenciosamente Heaven City")
+# setup modules
+setup_tickets(bot, CATEGORY_ID, LOG_CHANNEL_ID, STAFF_ROLE_ID)
+setup_commands(bot)
 
-        await ctx.send(content="@everyone", embed=embed)
+@bot.event
+async def on_ready():
+    print(f"✅ Bot conectado como {bot.user}")
+    try:
+        await bot.tree.sync()
+    except Exception:
+        pass
 
-    # ✅ comando: !enviar
-    @commands.command()
-    async def enviar(self, ctx, *, mensagem):
-        await ctx.send(mensagem)
-
-    # ✅ comando: !anuncio
-    @commands.command()
-    async def anuncio(self, ctx):
-        embed = discord.Embed(
-            title="🟪 PAINEL:",
-            description="🌐 [Clique aqui para acessar o site](https://heavencity.com/)",
-            color=0xA02D8E
-        )
-
-        embed.add_field(
-            name="🏙️ CONNECT HEAVEN CITY:",
-            value="```189.127.164.145:22749```",
-            inline=False
-        )
-
-        embed.set_thumbnail(url="https://i.imgur.com/AvL2Qck.png")
-        embed.set_footer(text="🟪 Atenciosamente Heaven City")
-
-        await ctx.send(content="@everyone", embed=embed)
+if __name__ == "__main__":
+    TOKEN = os.getenv("DISCORD_TOKEN")
+    if not TOKEN:
+        raise RuntimeError("DISCORD_TOKEN não encontrado nas variáveis de ambiente")
+    bot.run(TOKEN)
