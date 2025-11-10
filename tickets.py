@@ -81,9 +81,6 @@ class CloseTicketButton(discord.ui.Button):
                     f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}.",
                     file=discord.File(file_name)
             )
-        await channel.delete()
-
-
 # ===============================================================
 # ✅ SELECT DE CATEGORIAS
 # ===============================================================
