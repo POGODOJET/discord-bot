@@ -51,16 +51,20 @@ class CloseTicketButton(discord.ui.Button):
 
     async def callback(self, interaction: Interaction):
 
+        # ✅ Verifica se é staff
         if not any(role.id == self.staff_role_id for role in interaction.user.roles):
-            return await interaction.response.send_message("🚫 Apenas staff pode fechar tickets.", ephemeral=True)
+            return await interaction.response.send_message(
+                "🚫 Apenas staff pode fechar tickets.",
+                ephemeral=True
+            )
 
         await interaction.response.send_message("✅ Fechando ticket em 5 segundos...", ephemeral=True)
         await asyncio.sleep(5)
 
         channel = interaction.channel
         guild = interaction.guild
-        log_channel = guild.get_channel(self.log_channel_id)
 
+        # ✅ Criar transcrição do ticket
         transcript = ""
         async for msg in channel.history(limit=None, oldest_first=True):
             transcript += f"[{msg.created_at}] {msg.author}: {msg.content}\n"
@@ -69,35 +73,35 @@ class CloseTicketButton(discord.ui.Button):
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(transcript)
 
-opener = guild.get_member(self.opener_id)
+        opener = guild.get_member(self.opener_id)
 
-# ✅ Enviar tudo para o privado DO USUÁRIO
-if opener:
-    try:
-        # Transcrição
-        await opener.send(
-            "✅ Seu ticket foi fechado! Aqui está a transcrição:",
-            file=discord.File(file_name)
-        )
+        # ✅ ENVIAR TUDO NO PRIVADO DO USUÁRIO
+        if opener:
+            try:
+                # Arquivo .txt
+                await opener.send(
+                    "✅ Seu ticket foi fechado! Aqui está a transcrição:",
+                    file=discord.File(file_name)
+                )
 
-        # Mensagem de confirmação igual ao log
-        await opener.send(
-            f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}."
-        )
+                # Mensagem igual ao log
+                await opener.send(
+                    f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}."
+                )
 
-        # Avaliação automática
-        await opener.send(
-            "**⭐ Avalie o atendimento!**\n"
-            "Responda com um número de **1 a 5**, sendo:\n"
-            "1 ⭐ = Péssimo\n"
-            "5 ⭐ = Excelente"
-        )
+                # Avaliação
+                await opener.send(
+                    "**⭐ Avalie o atendimento!**\n"
+                    "Responda com um número de **1 a 5**:\n"
+                    "1 ⭐ = Péssimo\n"
+                    "5 ⭐ = Excelente"
+                )
 
-    except Exception:
-        pass
+            except Exception:
+                pass
 
-# ✅ Fechar o canal
-await channel.delete()
+        # ✅ APAGA O CANAL
+        await channel.delete()
 
 # ===============================================================
 # ✅ SELECT DE CATEGORIAS
