@@ -8,8 +8,8 @@ from tickets import send_ticket_panel
 # ===============================================================
 # ✅ Setup dos módulos de comandos
 # ===============================================================
-def setup_commands(bot):
-    bot.add_cog(_MiscCommands(bot))
+async def setup_commands(bot):
+    await bot.add_cog(_MiscCommands(bot))
 
 
 # ===============================================================
