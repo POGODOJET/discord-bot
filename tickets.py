@@ -167,11 +167,6 @@ class TicketSelect(discord.ui.Select):
             embed=embed_user,
             ephemeral=True
         )
-
-        if log_channel:
-            await log_channel.send(f"✅ Novo ticket aberto: {ticket_channel.mention}")
-
-
 # ===============================================================
 # ✅ VIEWS
 # ===============================================================
