@@ -69,24 +69,36 @@ class CloseTicketButton(discord.ui.Button):
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(transcript)
 
-        opener = guild.get_member(self.opener_id)
+opener = guild.get_member(self.opener_id)
 
-        if opener:
-            try:
-                await opener.send(
-                    "✅ Seu ticket foi fechado! Aqui está a transcrição:",
-                    file=discord.File(file_name)
-                )
-            except:
-                pass
+# ✅ Enviar tudo para o privado DO USUÁRIO
+if opener:
+    try:
+        # Transcrição
+        await opener.send(
+            "✅ Seu ticket foi fechado! Aqui está a transcrição:",
+            file=discord.File(file_name)
+        )
 
-        if log_channel:
-            await log_channel.send(
-                f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}.",
-                file=discord.File(file_name)
-            )
+        # Mensagem de confirmação igual ao log
+        await opener.send(
+            f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}."
+        )
 
-        await channel.delete()
+        # Avaliação automática
+        await opener.send(
+            "**⭐ Avalie o atendimento!**\n"
+            "Responda com um número de **1 a 5**, sendo:\n"
+            "1 ⭐ = Péssimo\n"
+            "5 ⭐ = Excelente"
+        )
+
+    except Exception:
+        pass
+
+# ✅ Fechar o canal
+await channel.delete()
+
 # ===============================================================
 # ✅ SELECT DE CATEGORIAS
 # ===============================================================
