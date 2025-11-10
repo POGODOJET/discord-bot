@@ -76,11 +76,17 @@ class CloseTicketButton(discord.ui.Button):
                 await opener.send(
                     "✅ Seu ticket foi fechado! Aqui está a transcrição:",
                     file=discord.File(file_name)
-                    )
-                await opener.send(
-                    f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}.",
-                    file=discord.File(file_name)
+                )
+            except:
+                pass
+
+        if log_channel:
+            await log_channel.send(
+                f"🔒 Ticket **{channel.name}** foi fechado por {interaction.user.mention}.",
+                file=discord.File(file_name)
             )
+
+        await channel.delete()
 # ===============================================================
 # ✅ SELECT DE CATEGORIAS
 # ===============================================================
