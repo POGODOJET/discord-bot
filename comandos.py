@@ -1,36 +1,28 @@
-# bot.py
-import os
-from discord.ext import commands
+# comandos.py
 import discord
+from discord.ext import commands
+from tickets import send_ticket_panel
 
-from tickets import setup_tickets
-from comandos import setup_commands
 
-# IDs fornecidos
-CATEGORY_ID = 1387269436259434557
-LOG_CHANNEL_ID = 1436234566015914077
-STAFF_ROLE_ID = 1387269134609420358
+def setup_commands(bot):
+    bot.add_cog(_MiscCommands(bot))
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
+class _MiscCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+    @commands.command()
+    async def teste(self, ctx, *, mensagem):
+        embed = discord.Embed(description=mensagem, color=0xA02D8E)
+        embed.set_thumbnail(url="https://heavencity.com/suaimagem.png")
+        embed.set_footer(text="💜 Atenciosamente Heaven City")
+        await ctx.send(content="@everyone", embed=embed)
 
-# setup modules
-setup_tickets(bot, CATEGORY_ID, LOG_CHANNEL_ID, STAFF_ROLE_ID)
-setup_commands(bot)
+    @commands.command()
+    async def enviar(self, ctx, *, mensagem):
+        await ctx.send(mensagem)
 
-@bot.event
-async def on_ready():
-    print(f"✅ Bot conectado como {bot.user}")
-    try:
-        await bot.tree.sync()
-    except Exception:
-        pass
-
-if __name__ == "__main__":
-    TOKEN = os.getenv("DISCORD_TOKEN")
-    if not TOKEN:
-        raise RuntimeError("DISCORD_TOKEN não encontrado nas variáveis de ambiente")
-    bot.run(TOKEN)
+    @commands.command()
+    async def anuncio(self, ctx):
+        embed = discord.Embed(title="🟪 PAINEL:", description="🌐 [Clique aqui para acessar o site](https://heavencity.com/)", color=0xA02D8E)
+        embed.add_field(name="🏙️ CONNECT HEAVEN CITY:", value=
