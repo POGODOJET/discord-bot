@@ -149,7 +149,7 @@ class TicketSelect(discord.ui.Select):
             color=0x2b2d31
         )
 
-        embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")
+        embed.set_image(url="https://media.discordapp.net/attachments/795844164763516969/1436384412928446607/heavenbanner.png?ex=69120bba&is=6910ba3a&hm=448016be260e494b64e14d8de2721fd9db6a385b8785af1902e0be85f4f1faa6&=&format=webp&quality=lossless")
         await ticket_channel.send(embed=embed, view=admin_view)
 
         embed_user = discord.Embed(
@@ -201,7 +201,7 @@ async def send_ticket_panel(ctx, category_id, log_channel_id, staff_role_id):
         color=0x2b2d31
     )
     
-    embed.set_image(url="https://i.imgur.com/LV7Q2Sx.png")
+    embed.set_image(url="https://media.discordapp.net/attachments/795844164763516969/1436384412928446607/heavenbanner.png?ex=69120bba&is=6910ba3a&hm=448016be260e494b64e14d8de2721fd9db6a385b8785af1902e0be85f4f1faa6&=&format=webp&quality=lossless")
 
     view = TicketView(category_id, log_channel_id, staff_role_id)
     await ctx.send(embed=embed, view=view)
