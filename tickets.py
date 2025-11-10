@@ -211,11 +211,11 @@ async def send_ticket_panel(ctx, category_id, log_channel_id, staff_role_id):
 # ✅ Setup (usado no bot.py)
 # ===============================================================
 
-def setup_tickets(bot, category_id, log_channel_id, staff_role_id):
+async def setup_tickets(bot, category_id, log_channel_id, staff_role_id):
     bot.ticket_category_id = category_id
     bot.ticket_log_channel_id = log_channel_id
     bot.ticket_staff_role_id = staff_role_id
-    bot.add_cog(_TicketCommands(bot))
+    await bot.add_cog(_TicketCommands(bot))
 
 
 class _TicketCommands(commands.Cog):
